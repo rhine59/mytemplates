@@ -82,6 +82,19 @@ variable "vm1_resource_pool" {
   description = "Resource pool."
 }
 
+variable "vm1_connection_user" {
+  type = "string"
+  default = "root"
+}
+
+variable "vm1_connection_password" {
+  type = "string"
+}
+
+variable "vm1_connection_host" {
+  type = "string"
+}
+
 
 data "vsphere_virtual_machine" "vm1_template" {
   name          = "${var.vm1_template_name}"
@@ -104,6 +117,15 @@ resource "vsphere_virtual_machine" "vm1" {
   memory        = "${var.vm1_memory}"
   guest_id = "${data.vsphere_virtual_machine.vm1_template.guest_id}"
   resource_pool_id = "${var.vm1_resource_pool}"
+  connection {
+    type = "ssh"
+    user = "${var.vm1_connection_user}"
+    password = "${var.vm1_connection_password}"
+    host = "${var.vm1_connection_host}"
+  }
+  provisioner "local-exec" {
+      command = "echo hello"
+  }
   clone {
     template_uuid = "${data.vsphere_virtual_machine.vm1_template.id}"
   }
